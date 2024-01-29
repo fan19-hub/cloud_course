@@ -1,33 +1,19 @@
-from flask import Flask, request,abort
+from flask import Flask, request
+import subprocess
+import socket
 
 app = Flask(__name__)
-seed = 0
 HTTP_OK=200
-
 @app.route('/', methods=['POST'])
-def update_seed():
-    global seed
-    # Get data in json format
-    if not request.is_json:
-        abort(400)
-    data = request.get_json()
-    num = data.get('num')
-    # Process Post request
-    if type(num) == int:
-        seed = num
-    else:
-        abort(400)
-    reponse_msg = f"Seed updated to {seed} successfully!"
-    status_code = HTTP_OK
+def run_stress_cpu():
+    subprocess.Popen(['python3', 'stress_cpu.py'])
     return "OK"
 
 
 @app.route('/', methods=['GET'])
-def get_seed():
-    reponse_msg = str(seed)
-    status_code = HTTP_OK
-    return reponse_msg
+def get_privateIP():
+    privateip = socket.gethostbyname(socket.gethostname())
+    return privateip
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0",
-            port=5000)
+    app.run(host='0.0.0.0', port=5000)
